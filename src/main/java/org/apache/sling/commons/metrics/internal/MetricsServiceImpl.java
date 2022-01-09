@@ -191,7 +191,7 @@ public class MetricsServiceImpl implements MetricsService {
     }
 
     private <T> Gauge<T> registerGauge(String name, Supplier<T> supplier) {
-        com.codahale.metrics.Gauge<T> codahaleGauge = () -> supplier.get();
+        com.codahale.metrics.Gauge<T> codahaleGauge = supplier::get;
         @SuppressWarnings("rawtypes")
         MetricSupplier<com.codahale.metrics.Gauge> metricSupplier = () -> codahaleGauge;
 
