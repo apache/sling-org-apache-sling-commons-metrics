@@ -191,20 +191,13 @@ public class MetricsServiceImpl implements MetricsService {
     }
 
     private <T> Gauge<T> registerGauge(String name, Supplier<T> supplier) {
+        com.codahale.metrics.Gauge<T> codahaleGauge = () -> supplier.get();
+        @SuppressWarnings("rawtypes")
+        MetricSupplier<com.codahale.metrics.Gauge> metricSupplier = () -> codahaleGauge;
 
         @SuppressWarnings("unchecked")
-        com.codahale.metrics.Gauge<T> g = registry.gauge(name, new MetricSupplier<com.codahale.metrics.Gauge>() {
-            @Override
-            public com.codahale.metrics.Gauge<T> newMetric() {
-                return new com.codahale.metrics.Gauge<T>() {
-                    @Override
-                    public T getValue() {
-                        return supplier.get();
-                    }
-                };
-            }
-        });
-        GaugeImpl<T> gauge = new GaugeImpl<T>(g);
+        com.codahale.metrics.Gauge<T> g = registry.gauge(name, metricSupplier);
+        GaugeImpl<T> gauge = new GaugeImpl<>(g);
         metrics.put(name, gauge);
         return gauge;
     }

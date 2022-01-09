@@ -133,12 +133,12 @@ public class MetricServiceTest {
         Gauge<Long> gauge = service.gauge("gauge",() -> 42L);
         assertNotNull(gauge);
         assertTrue(getRegistry().getGauges().containsKey("gauge"));
-        assertTrue(gauge.getValue() == 42L);
+        assertEquals(new Long(42L),gauge.getValue());
 
         // unwrap to the codahale metric
         @SuppressWarnings("unchecked")
         com.codahale.metrics.Gauge<Long> codahaleGauge = gauge.adaptTo(com.codahale.metrics.Gauge.class);
-        assertTrue(codahaleGauge.getValue() == 42L);
+        assertEquals(new Long(42L),codahaleGauge.getValue());
 
         // Just the name matters, not the supplier
         Gauge<?> gauge2 = service.gauge("gauge", () -> 43L);
