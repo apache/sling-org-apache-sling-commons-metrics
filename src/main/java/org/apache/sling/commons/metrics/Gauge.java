@@ -41,7 +41,7 @@ import org.osgi.annotation.versioning.ConsumerType;
  * @param <T> the type of the metric's value
  */
 @ConsumerType
-public interface Gauge<T> {
+public interface Gauge<T> extends Metric {
     /**
      * Service property name which determines the name of the Gauge
      */

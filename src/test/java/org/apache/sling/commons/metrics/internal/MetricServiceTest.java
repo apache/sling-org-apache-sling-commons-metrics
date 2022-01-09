@@ -22,6 +22,7 @@ package org.apache.sling.commons.metrics.internal;
 import java.lang.management.ManagementFactory;
 import java.util.Collections;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -126,6 +127,24 @@ public class MetricServiceTest {
         assertSame(histo, service.histogram("test"));
     }
 
+    @Test
+    public void gaugeRegistration () throws Exception{
+        activate();
+        Gauge<Long> gauge = service.gauge("gauge",() -> 42L);
+        assertNotNull(gauge);
+        assertTrue(getRegistry().getGauges().containsKey("gauge"));
+        assertTrue(gauge.getValue() == 42L);
+
+        // unwrap to the codahale metric
+        @SuppressWarnings("unchecked")
+        com.codahale.metrics.Gauge<Long> codahaleGauge = gauge.adaptTo(com.codahale.metrics.Gauge.class);
+        assertTrue(codahaleGauge.getValue() == 42L);
+
+        // Just the name matters, not the supplier
+        Gauge<?> gauge2 = service.gauge("gauge", () -> 43L);
+        assertSame(gauge, gauge2);
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void sameNameDifferentTypeMetric() throws Exception{
         activate();
@@ -151,7 +170,7 @@ public class MetricServiceTest {
     }
 
     @Test
-    public void gaugeRegistration() throws Exception{
+    public void gaugeRegistrationViaWhiteboard() throws Exception{
         activate();
         ServiceRegistration<Gauge> reg = context.bundleContext().registerService(Gauge.class, new TestGauge(42),
                 MapUtil.toDictionary(Gauge.NAME, "foo"));
@@ -181,6 +200,12 @@ public class MetricServiceTest {
         @Override
         public Object getValue() {
             return value;
+        }
+
+        @Override
+        public <A> A adaptTo(Class<A> type) {
+            // not used here
+            return null;
         }
     }
 
