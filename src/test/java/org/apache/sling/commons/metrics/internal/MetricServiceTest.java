@@ -135,11 +135,6 @@ public class MetricServiceTest {
         assertTrue(getRegistry().getGauges().containsKey("gauge"));
         assertEquals(new Long(42L),gauge.getValue());
 
-        // unwrap to the codahale metric
-        @SuppressWarnings("unchecked")
-        com.codahale.metrics.Gauge<Long> codahaleGauge = gauge.adaptTo(com.codahale.metrics.Gauge.class);
-        assertEquals(new Long(42L),codahaleGauge.getValue());
-
         // Just the name matters, not the supplier
         Gauge<?> gauge2 = service.gauge("gauge", () -> 43L);
         assertSame(gauge, gauge2);
@@ -200,12 +195,6 @@ public class MetricServiceTest {
         @Override
         public Object getValue() {
             return value;
-        }
-
-        @Override
-        public <A> A adaptTo(Class<A> type) {
-            // not used here
-            return null;
         }
     }
 

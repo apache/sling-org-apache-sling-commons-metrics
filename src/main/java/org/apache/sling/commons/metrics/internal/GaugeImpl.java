@@ -21,8 +21,9 @@ package org.apache.sling.commons.metrics.internal;
 
 
 import org.apache.sling.commons.metrics.Gauge;
+import org.apache.sling.commons.metrics.Metric;
 
-public class GaugeImpl<T> implements Gauge<T> {
+public class GaugeImpl<T> implements Gauge<T>, Metric {
 
     com.codahale.metrics.Gauge<T> gauge;
 
