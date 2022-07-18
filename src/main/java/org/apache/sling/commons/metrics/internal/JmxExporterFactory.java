@@ -99,11 +99,11 @@ public class JmxExporterFactory {
                     LOG.info("pattern {} does not match any MBean", patternString);
                 } else {
                     allMBeans.forEach(objectname -> {
-                        LOG.debug("registering properties for {}", objectname.toString());
+                        LOG.debug("registering properties for {}");
                         try {
                             registerMBeanProperties(objectname);
                         } catch (IntrospectionException | InstanceNotFoundException | ReflectionException e) {
-                            LOG.error("Cannot register metrics for objectname = {}", objectname.toString(),e);
+                            LOG.error("Cannot register metrics for objectname = {}", e);
                         }
                     });
                 }
@@ -135,7 +135,7 @@ public class JmxExporterFactory {
             if (supplier != null) {
                 String metricName = toMetricName(objectname, attr.getName());
                 LOG.info("Registering metric {} from MBean (objectname=[{}], name={}, type={})", 
-                        metricName,objectname.toString(), attr.getName(), attr.getType());
+                        metricName, objectname, attr.getName(), attr.getType());
                 metrics.gauge(metricName, supplier);
             }
         }
@@ -144,7 +144,7 @@ public class JmxExporterFactory {
     
     private <T> Supplier<T> getSupplier ( ObjectName name, String attributeName, T defaultValue ) {
         
-        Supplier<T> supplier = () -> {
+        return () -> {
             try {
                 return (T) server.getAttribute(name, attributeName);
             } catch (InstanceNotFoundException | AttributeNotFoundException | ReflectionException
@@ -154,7 +154,6 @@ public class JmxExporterFactory {
             }
             
         };
-        return supplier;
     }
     
     
@@ -168,11 +167,12 @@ public class JmxExporterFactory {
         List<String> keyValues = new ArrayList<>(allkeys.values());
         Collections.sort(keyValues);
         
+        StringBuilder builder = new StringBuilder(name);
         for (String s: keyValues) {
-            name += "." + s;
+            builder.append( "." + s);
         }
-        name += "." + attributeName;
-        return name;
+        builder.append("." + attributeName);
+        return builder.toString();
     }
     
 }
