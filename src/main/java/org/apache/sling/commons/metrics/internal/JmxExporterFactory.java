@@ -67,7 +67,7 @@ public class JmxExporterFactory {
         String[] objectnames();
         
         @AttributeDefinition
-        String webconsole_configurationFactory_nameHint() default "Pattern: {objectnames}";
+        String webconsole_configurationFactory_nameHint() default "Pattern: {objectnames}"; //NOSONAR
     }
     
     
@@ -99,11 +99,11 @@ public class JmxExporterFactory {
                     LOG.info("pattern {} does not match any MBean", patternString);
                 } else {
                     allMBeans.forEach(objectname -> {
-                        LOG.debug("registering properties for {}");
+                        LOG.debug("registering properties for {}", objectname);
                         try {
                             registerMBeanProperties(objectname);
                         } catch (IntrospectionException | InstanceNotFoundException | ReflectionException e) {
-                            LOG.error("Cannot register metrics for objectname = {}", e);
+                            LOG.error("Cannot register metrics for objectname = {}", objectname, e);
                         }
                     });
                 }
