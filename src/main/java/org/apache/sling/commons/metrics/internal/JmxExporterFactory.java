@@ -41,12 +41,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.commons.metrics.MetricsService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.codahale.metrics.MetricRegistry;
 
 
 /**
@@ -79,6 +82,7 @@ public class JmxExporterFactory {
     MBeanServer server;
     
     @Activate
+    @Modified
     public void activate(Config config) {
         server = ManagementFactory.getPlatformMBeanServer();
         registerMetrics(config.objectnames());
