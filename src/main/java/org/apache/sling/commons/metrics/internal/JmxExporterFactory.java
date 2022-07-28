@@ -49,8 +49,6 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.codahale.metrics.MetricRegistry;
-
 
 /**
  * This ServiceFactory allows to export JMX object names as metrics (gauge).
