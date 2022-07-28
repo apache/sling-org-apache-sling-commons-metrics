@@ -44,7 +44,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JmxExporterFactoryTest {
@@ -115,12 +115,16 @@ public class JmxExporterFactoryTest {
     public void test() {
         Map<String,Object> props = new HashMap<>();
         props.put("objectnames", new String[]{OBJECT_NAME_QUERY});
+        
+        // this will query all specified mbeans and create metrics for it
         context.registerInjectActivateService(exporter, props);
         
         // Integer
         Mockito.verify(metrics).gauge(Mockito.eq(EXPECTED_0_INT_NAME), intSupplierCaptor.capture());
         assertEquals(new Integer(0),intSupplierCaptor.getValue().get());
-        mbeans[0].setInt(10);
+        
+        // test that an update in the mbean reflects in the metrics
+        mbeans[0].setInt(10); 
         Mockito.verify(metrics).gauge(Mockito.eq(EXPECTED_0_INT_NAME), intSupplierCaptor.capture());
         assertEquals(new Integer(10),intSupplierCaptor.getValue().get());
         
