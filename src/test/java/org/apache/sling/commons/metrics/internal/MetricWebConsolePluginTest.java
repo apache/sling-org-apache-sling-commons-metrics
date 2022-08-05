@@ -19,6 +19,19 @@
 
 package org.apache.sling.commons.metrics.internal;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+
+
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -27,41 +40,26 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import com.codahale.metrics.JvmAttributeGaugeSet;
-import com.codahale.metrics.MetricRegistry;
-import com.gargoylesoftware.htmlunit.StringWebResponse;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.WebResponse;
-import com.gargoylesoftware.htmlunit.html.HTMLParser;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.html.HtmlTable;
 import org.apache.felix.inventory.Format;
 import org.apache.felix.utils.json.JSONParser;
 import org.apache.sling.testing.mock.osgi.MockOsgi;
-import org.apache.sling.testing.mock.osgi.junit.OsgiContext;
+import org.apache.sling.testing.mock.sling.junit.SlingContext;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import com.codahale.metrics.JvmAttributeGaugeSet;
+import com.codahale.metrics.MetricRegistry;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlTable;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MetricWebConsolePluginTest {
     @Rule
-    public final OsgiContext context = new OsgiContext();
+    public final SlingContext context = new SlingContext();
 
     private MetricWebConsolePlugin plugin = new MetricWebConsolePlugin();
 
@@ -157,22 +155,17 @@ public class MetricWebConsolePluginTest {
 
         activatePlugin();
 
-        StringWriter sw = new StringWriter();
+        plugin.doGet(mock(HttpServletRequest.class), context.response());
 
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        when(response.getWriter()).thenReturn(new PrintWriter(sw));
-
-        plugin.doGet(mock(HttpServletRequest.class), response);
-
-        WebClient client = new WebClient();
-        WebResponse resp = new StringWebResponse(sw.toString(), WebClient.URL_ABOUT_BLANK);
-        HtmlPage page = HTMLParser.parseHtml(resp, client.getCurrentWindow());
-
-        assertTable("data-meters", page);
-        assertTable("data-counters", page);
-        assertTable("data-timers", page);
-        assertTable("data-histograms", page);
-        assertTable("data-gauges", page);
+        try (WebClient client = new WebClient();) {
+            HtmlPage page = client.loadHtmlCodeIntoCurrentWindow(context.response().getOutputAsString());
+    
+            assertTable("data-meters", page);
+            assertTable("data-counters", page);
+            assertTable("data-timers", page);
+            assertTable("data-histograms", page);
+            assertTable("data-gauges", page);
+        }
     }
 
     private void assertTable(String name, HtmlPage page) {

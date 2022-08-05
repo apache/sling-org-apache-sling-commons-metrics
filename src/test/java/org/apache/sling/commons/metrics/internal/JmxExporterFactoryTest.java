@@ -121,16 +121,16 @@ public class JmxExporterFactoryTest {
         
         // Integer
         Mockito.verify(metrics).gauge(Mockito.eq(EXPECTED_0_INT_NAME), intSupplierCaptor.capture());
-        assertEquals(new Integer(0),intSupplierCaptor.getValue().get());
+        assertEquals(Integer.valueOf(0),intSupplierCaptor.getValue().get());
         
         // test that an update in the mbean reflects in the metrics
         mbeans[0].setInt(10); 
         Mockito.verify(metrics).gauge(Mockito.eq(EXPECTED_0_INT_NAME), intSupplierCaptor.capture());
-        assertEquals(new Integer(10),intSupplierCaptor.getValue().get());
+        assertEquals(Integer.valueOf(10),intSupplierCaptor.getValue().get());
         
         // Long
         Mockito.verify(metrics).gauge(Mockito.eq(EXPECTED_0_LONG_NAME), longSupplierCaptor.capture());
-        assertEquals(new Long(0L),longSupplierCaptor.getValue().get());
+        assertEquals(Long.valueOf(0L),longSupplierCaptor.getValue().get());
         
         // String
         Mockito.verify(metrics).gauge(Mockito.eq(EXPECTED_0_STRING_NAME), stringSupplierCaptor.capture());
@@ -142,10 +142,10 @@ public class JmxExporterFactoryTest {
         
         // MBean 1
         Mockito.verify(metrics).gauge(Mockito.eq(EXPECTED_1_INT_NAME), intSupplierCaptor.capture());
-        assertEquals(new Integer(1),intSupplierCaptor.getValue().get());
+        assertEquals(Integer.valueOf(1),intSupplierCaptor.getValue().get());
         
         Mockito.verify(metrics).gauge(Mockito.eq(EXPECTED_1_LONG_NAME), longSupplierCaptor.capture());
-        assertEquals(new Long(1L),longSupplierCaptor.getValue().get());
+        assertEquals(Long.valueOf(1L),longSupplierCaptor.getValue().get());
         
         // verify that no metrics for MBean2 have been registered
         Mockito.verify(metrics, never()).gauge(Mockito.eq(EXPECTED_2_INT_NAME), intSupplierCaptor.capture());
