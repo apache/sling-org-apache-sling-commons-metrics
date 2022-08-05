@@ -19,6 +19,7 @@
 package org.apache.sling.commons.metrics.internal;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.never;
 
 import java.lang.management.ManagementFactory;
@@ -64,6 +65,9 @@ public class JmxExporterFactoryTest {
     @Captor
     ArgumentCaptor<Supplier<Double>> doubleSupplierCaptor;
     
+    @Captor
+    ArgumentCaptor<Supplier<Boolean>> booleanSupplierCaptor;
+    
     JmxExporterFactory exporter;
     
     private static final String OBJECT_NAME_0 = "org.apache.sling.whiteboard.jmxexporter.impl0:type=sample1";
@@ -75,6 +79,7 @@ public class JmxExporterFactoryTest {
     
     private static final String EXPECTED_0_INT_NAME  = "org.apache.sling.whiteboard.jmxexporter.impl0.sample1.Int";
     private static final String EXPECTED_0_LONG_NAME = "org.apache.sling.whiteboard.jmxexporter.impl0.sample1.Long";
+    private static final String EXPECTED_0_BOOLEAN_NAME = "org.apache.sling.whiteboard.jmxexporter.impl0.sample1.Boolean";
     private static final String EXPECTED_0_STRING_NAME = "org.apache.sling.whiteboard.jmxexporter.impl0.sample1.String";
     private static final String EXPECTED_0_DOUBLE_NAME = "org.apache.sling.whiteboard.jmxexporter.impl0.sample1.Double";
     
@@ -136,6 +141,10 @@ public class JmxExporterFactoryTest {
         Mockito.verify(metrics).gauge(Mockito.eq(EXPECTED_0_STRING_NAME), stringSupplierCaptor.capture());
         assertEquals("sample",stringSupplierCaptor.getValue().get());
         
+        // Boolean
+        Mockito.verify(metrics).gauge(Mockito.eq(EXPECTED_0_BOOLEAN_NAME), booleanSupplierCaptor.capture());
+        assertFalse(booleanSupplierCaptor.getValue().get());
+        
         // Double
         Mockito.verify(metrics).gauge(Mockito.eq(EXPECTED_0_DOUBLE_NAME), doubleSupplierCaptor.capture());
         assertEquals(STATIC_DOUBLE,doubleSupplierCaptor.getValue().get());
@@ -185,6 +194,10 @@ public class JmxExporterFactoryTest {
             return STATIC_DOUBLE;
         }
         
+        public boolean getBoolean() {
+            return false;
+        }
+        
     }
     
     
@@ -194,6 +207,7 @@ public class JmxExporterFactoryTest {
         public long getLong();
         public String getString();
         public double getDouble();
+        public boolean getBoolean();
         
     }
     
