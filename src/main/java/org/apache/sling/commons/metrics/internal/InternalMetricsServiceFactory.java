@@ -107,5 +107,10 @@ class InternalMetricsServiceFactory implements ServiceFactory<MetricsService> {
             return delegate.gauge(name, supplier);
         }
 
+        @Override
+        public boolean unregister(String name) {
+            return metricsMapper.unregister(Collections.singleton(name));
+        }
+
     }
 }

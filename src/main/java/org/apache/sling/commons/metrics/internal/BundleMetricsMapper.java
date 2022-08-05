@@ -51,13 +51,14 @@ class BundleMetricsMapper implements ObjectNameFactory{
         metricToBundleMapping.putIfAbsent(name, bundle);
     }
 
-    public void unregister(Set<String> registeredNames) {
+    public boolean unregister(Set<String> registeredNames) {
         for (String name : registeredNames){
             registry.remove(name);
             metricToBundleMapping.remove(name);
             metricsService.remove(name);
         }
         log.debug("Removed metrics for {}", registeredNames);
+        return true;
     }
 
     @Override

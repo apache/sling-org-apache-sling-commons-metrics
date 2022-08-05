@@ -63,6 +63,11 @@ public interface MetricsService {
         public <T> Gauge<T> gauge(String name, Supplier<T> supplier) {
             return null;
         }
+
+        @Override
+        public boolean unregister(String name) {
+            return false;
+        }
     };
 
     /**
@@ -121,5 +126,14 @@ public interface MetricsService {
      * or null if this metric cannot be adapted to the specified type.
      */
     <A> A adaptTo(Class<A> type);
+    
+    
+    /**
+     * Unregister a metric by its name
+     * @param name the name of the metric
+     * @return true if the metric was correctly unregistered, false otherwise.
+     */
+    public boolean unregister (String name);
+    
 
 }
