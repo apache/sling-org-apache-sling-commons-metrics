@@ -132,6 +132,8 @@ public class JmxExporterFactory {
                 supplier = getSupplier(objectname,attr.getName(),"");
             } else if ("double".equals(attr.getType())) {
                 supplier = getSupplier(objectname,attr.getName(), Double.valueOf(0.0));
+            } else if ("boolean".equals(attr.getType())) {
+                supplier = getSupplier(objectname,attr.getName(), Boolean.FALSE);
             }
             
             if (supplier != null) {
