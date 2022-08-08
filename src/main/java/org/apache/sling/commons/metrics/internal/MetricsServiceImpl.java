@@ -137,6 +137,12 @@ public class MetricsServiceImpl implements MetricsService {
         }
         return null;
     }
+    
+    @Override
+    public boolean unregister (String name) {
+        return registry.remove(name);
+    }
+    
 
     void remove(String name) {
         metrics.remove(name);

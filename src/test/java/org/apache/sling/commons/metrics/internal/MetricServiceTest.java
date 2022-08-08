@@ -176,6 +176,18 @@ public class MetricServiceTest {
         reg.unregister();
         assertFalse(getRegistry().getGauges().containsKey("foo"));
     }
+    
+    
+    @Test
+    public void unregisterMetric() {
+        activate();
+        Gauge<Long> gauge = service.gauge("gauge",() -> 42L);
+        assertNotNull(gauge);
+        assertTrue(getRegistry().getGauges().containsKey("gauge"));
+        service.unregister("gauge");
+        assertFalse(getRegistry().getGauges().containsKey("gauge"));
+    }
+    
 
     private MetricRegistry getRegistry(){
         return context.getService(MetricRegistry.class);
