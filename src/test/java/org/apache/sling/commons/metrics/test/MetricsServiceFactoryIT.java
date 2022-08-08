@@ -18,8 +18,6 @@
  */
 package org.apache.sling.commons.metrics.test;
 
-import javax.inject.Inject;
-
 import org.apache.sling.commons.metrics.MetricsService;
 import org.apache.sling.commons.metrics.MetricsServiceFactory;
 import org.apache.sling.testing.paxexam.TestSupport;
@@ -30,8 +28,6 @@ import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
-import org.osgi.framework.BundleContext;
-
 import static org.apache.sling.testing.paxexam.SlingOptions.scr;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
@@ -42,9 +38,6 @@ import static org.ops4j.pax.exam.CoreOptions.options;
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
 public class MetricsServiceFactoryIT extends TestSupport {
-
-    @Inject
-    private BundleContext bundleContext;
 
     @Configuration
     public Option[] configuration() {

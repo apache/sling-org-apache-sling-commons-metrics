@@ -22,8 +22,6 @@ package org.apache.sling.commons.metrics.internal;
 import java.lang.management.ManagementFactory;
 import java.util.Collections;
 import java.util.Set;
-import java.util.function.Supplier;
-
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.management.Query;
@@ -49,13 +47,15 @@ import static org.apache.sling.commons.metrics.internal.BundleMetricsMapper.JMX_
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+
+
 
 public class MetricServiceTest {
     @Rule
