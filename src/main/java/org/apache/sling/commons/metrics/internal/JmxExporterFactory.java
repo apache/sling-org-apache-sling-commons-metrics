@@ -19,7 +19,10 @@
 package org.apache.sling.commons.metrics.internal;
 
 import java.lang.management.ManagementFactory;
+import javax.management.MBeanServerNotification;
+import javax.management.NotificationListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
@@ -33,7 +36,9 @@ import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanException;
 import javax.management.MBeanInfo;
 import javax.management.MBeanServer;
+import javax.management.MBeanServerDelegate;
 import javax.management.MalformedObjectNameException;
+import javax.management.Notification;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
 
@@ -70,6 +75,8 @@ public class JmxExporterFactory {
         @AttributeDefinition
         String webconsole_configurationFactory_nameHint() default "Pattern: {objectnames}"; //NOSONAR
     }
+
+    String[] patterns;
     
     
     private static final Logger LOG = LoggerFactory.getLogger(JmxExporterFactory.class);
@@ -78,14 +85,46 @@ public class JmxExporterFactory {
     MetricsService metrics;
     
     MBeanServer server;
-    
+
+    NotificationListener listener = new NotificationListener() {
+        public void handleNotification(Notification notification, Object handback) {
+            if (MBeanServerNotification.REGISTRATION_NOTIFICATION.equals(notification.getType())) {
+                ObjectName objectname = null;
+                try {
+                    if(notification instanceof MBeanServerNotification) {
+                        MBeanServerNotification mbeanNotification = (MBeanServerNotification) notification;
+                        objectname = mbeanNotification.getMBeanName();
+                        LOG.debug("JMX Notification : match {} with pattern = {}", objectname, Arrays.asList(patterns));
+                        for (String pattern : patterns) {
+                            if (objectname.toString().matches(pattern)) {
+                                LOG.debug("JMX Notification : register metrics for MBean: {}", objectname);
+                                registerMBeanProperties(objectname);
+                                break;
+                            }
+                        }
+                    } else {
+                        LOG.debug("JMX Notification : Cannot register metrics for objectname = {}", objectname);
+                    }
+                } catch (InstanceNotFoundException | ReflectionException | IntrospectionException e) {
+                    LOG.error("JMX Notification : Cannot register metrics for objectname = {}", objectname, e);
+                }
+            }
+        }
+    };
+
     @Activate
     @Modified
     public void activate(Config config) {
         server = ManagementFactory.getPlatformMBeanServer();
-        registerMetrics(config.objectnames());
+        patterns = config.objectnames();
+        try {
+            server.addNotificationListener(MBeanServerDelegate.DELEGATE_NAME, listener, null, null);
+        } catch (InstanceNotFoundException e) {
+            LOG.error("Cannot add notification listener to MBeanServerDelegate", e);
+        }
+        registerMetrics(patterns);
     }
-    
+
 
     /**
      * Register all applicable metrics for an objectname pattern
