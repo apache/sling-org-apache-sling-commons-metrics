@@ -85,8 +85,17 @@ public class JmxExporterFactory {
     MetricsService metrics;
     
     MBeanServer server;
-
+    /**
+     * This listener is registered to the MBeanServerDelegate to listen for MBean registrations.
+     * When an MBean is registered, the listener checks if the objectname matches the configured patterns,
+     * and if so, registers all attributes of the MBean as metrics if they are not registered already.
+     */
     NotificationListener listener = new NotificationListener() {
+        /**
+         * The handler is invoked for every notification,
+         * however gauges are only registered if they do not exist yet.
+         * See {@link #MetricsService#gauge(String, Supplier)} and {@link #MetricsServiceImpl#getOrAddGauge(String, Supplier)}
+         */
         public void handleNotification(Notification notification, Object handback) {
             if (MBeanServerNotification.REGISTRATION_NOTIFICATION.equals(notification.getType())) {
                 ObjectName objectname = null;
@@ -103,7 +112,7 @@ public class JmxExporterFactory {
                             }
                         }
                     } else {
-                        LOG.debug("JMX Notification : Cannot register metrics for objectname = {}", objectname);
+                        LOG.debug("JMX Notification : Cannot handle notification, because it's not a MBeanServerNotification ({})", notification);
                     }
                 } catch (InstanceNotFoundException | ReflectionException | IntrospectionException e) {
                     LOG.error("JMX Notification : Cannot register metrics for objectname = {}", objectname, e);
