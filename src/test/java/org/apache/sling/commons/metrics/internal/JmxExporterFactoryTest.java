@@ -33,11 +33,13 @@ import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
+import javax.management.MBeanServerDelegate;
 import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
+import javax.management.Notification;
+import javax.management.NotificationListener;
 import javax.management.ObjectName;
 
-import org.apache.sling.commons.metrics.Gauge;
 import org.apache.sling.commons.metrics.MetricsService;
 import org.apache.sling.testing.mock.osgi.junit.OsgiContext;
 import org.junit.After;
@@ -99,13 +101,16 @@ public class JmxExporterFactoryTest {
     private static final Double STATIC_DOUBLE = 1.0;
     
     MetricsService metrics;
-    
+    NotificationListener listener;
     SimpleBean mbeans[] = { new SimpleBean(0,0L), new SimpleBean(1,1L), new SimpleBean(2,2L)};
     
     
     @Before
-    public void setup() throws MalformedObjectNameException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException {
+    public void setup() throws MalformedObjectNameException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException, InstanceNotFoundException {
         MBeanServer server = ManagementFactory.getPlatformMBeanServer();
+
+        listener = Mockito.mock(NotificationListener.class);
+        server.addNotificationListener(MBeanServerDelegate.DELEGATE_NAME, listener, null, null);
 
         server.registerMBean(mbeans[0],new ObjectName(OBJECT_NAME_0));        
         server.registerMBean(mbeans[1],new ObjectName(OBJECT_NAME_1));
@@ -170,6 +175,9 @@ public class JmxExporterFactoryTest {
         
         // verify that no metrics for MBean2 have been registered
         Mockito.verify(metrics, never()).gauge(Mockito.eq(EXPECTED_2_INT_NAME), intSupplierCaptor.capture());
+
+        Mockito.verify(listener, Mockito.times(3)).handleNotification(Mockito.any(Notification.class), Mockito.any());
+
         
     }
     
@@ -190,6 +198,16 @@ public class JmxExporterFactoryTest {
         context.registerInjectActivateService(exporter, props);
         Mockito.verifyNoInteractions(metrics);
     }
+
+    @Test
+    public void checkNotificationListener() throws Exception {
+        MBeanServer server = ManagementFactory.getPlatformMBeanServer();
+        ObjectName test = new ObjectName("com.example:type=TestMBean");
+        server.registerMBean(new SimpleBean(1, 1L), test);
+        Mockito.verify(listener, Mockito.times(4)).handleNotification(Mockito.any(Notification.class), Mockito.any());
+    }
+
+  
     
     
     static class SimpleBean implements SimpleBeanMBean {
