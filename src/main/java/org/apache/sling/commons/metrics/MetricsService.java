@@ -16,9 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.commons.metrics;
-
 
 import java.util.function.Supplier;
 
@@ -126,14 +124,11 @@ public interface MetricsService {
      * or null if this metric cannot be adapted to the specified type.
      */
     <A> A adaptTo(Class<A> type);
-    
-    
+
     /**
      * Unregister a metric by its name
      * @param name the name of the metric
      * @return true if the metric was correctly unregistered, false otherwise.
      */
-    public boolean unregister (String name);
-    
-
+    public boolean unregister(String name);
 }

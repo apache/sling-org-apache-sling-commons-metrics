@@ -16,16 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.commons.metrics.internal;
 
-import java.lang.management.ManagementFactory;
-import java.util.Collections;
-import java.util.Set;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.management.Query;
 import javax.management.QueryExp;
+
+import java.lang.management.ManagementFactory;
+import java.util.Collections;
+import java.util.Set;
 
 import com.codahale.metrics.JmxReporter;
 import com.codahale.metrics.MetricRegistry;
@@ -44,18 +44,16 @@ import org.junit.Test;
 import org.osgi.framework.ServiceRegistration;
 
 import static org.apache.sling.commons.metrics.internal.BundleMetricsMapper.JMX_TYPE_METRICS;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-
-
 
 public class MetricServiceTest {
     @Rule
@@ -64,12 +62,12 @@ public class MetricServiceTest {
     private MetricsServiceImpl service = new MetricsServiceImpl();
 
     @After
-    public void deactivate(){
+    public void deactivate() {
         MockOsgi.deactivate(service, context.bundleContext());
     }
 
     @Test
-    public void defaultSetup() throws Exception{
+    public void defaultSetup() throws Exception {
         activate();
 
         assertNotNull(context.getService(MetricRegistry.class));
@@ -84,7 +82,7 @@ public class MetricServiceTest {
     }
 
     @Test
-    public void meter() throws Exception{
+    public void meter() throws Exception {
         activate();
         Meter meter = service.meter("test");
 
@@ -95,7 +93,7 @@ public class MetricServiceTest {
     }
 
     @Test
-    public void counter() throws Exception{
+    public void counter() throws Exception {
         activate();
         Counter counter = service.counter("test");
 
@@ -106,7 +104,7 @@ public class MetricServiceTest {
     }
 
     @Test
-    public void timer() throws Exception{
+    public void timer() throws Exception {
         activate();
         Timer timer = service.timer("test");
 
@@ -117,7 +115,7 @@ public class MetricServiceTest {
     }
 
     @Test
-    public void histogram() throws Exception{
+    public void histogram() throws Exception {
         activate();
         Histogram histo = service.histogram("test");
 
@@ -128,12 +126,12 @@ public class MetricServiceTest {
     }
 
     @Test
-    public void gaugeRegistration () throws Exception{
+    public void gaugeRegistration() throws Exception {
         activate();
-        Gauge<Long> gauge = service.gauge("gauge",() -> 42L);
+        Gauge<Long> gauge = service.gauge("gauge", () -> 42L);
         assertNotNull(gauge);
         assertTrue(getRegistry().getGauges().containsKey("gauge"));
-        assertEquals(new Long(42L),gauge.getValue());
+        assertEquals(new Long(42L), gauge.getValue());
 
         // Just the name matters, not the supplier
         Gauge<?> gauge2 = service.gauge("gauge", () -> 43L);
@@ -141,34 +139,34 @@ public class MetricServiceTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void sameNameDifferentTypeMetric() throws Exception{
+    public void sameNameDifferentTypeMetric() throws Exception {
         activate();
         service.histogram("test");
         service.timer("test");
     }
 
     @Test
-    public void jmxRegistration() throws Exception{
+    public void jmxRegistration() throws Exception {
         MBeanServer server = ManagementFactory.getPlatformMBeanServer();
         activate();
         Meter meter = service.meter("test");
         assertNotNull(meter);
         QueryExp q = Query.isInstanceOf(Query.value(JmxReporter.JmxMeterMBean.class.getName()));
-        Set<ObjectName> names = server.queryNames(new ObjectName("org.apache.sling:name=*,type="+ JMX_TYPE_METRICS), q);
+        Set<ObjectName> names =
+                server.queryNames(new ObjectName("org.apache.sling:name=*,type=" + JMX_TYPE_METRICS), q);
         assertThat(names, is(not(empty())));
 
         MockOsgi.deactivate(service, context.bundleContext());
 
         names = server.queryNames(new ObjectName("org.apache.sling:name=*"), q);
         assertThat(names, is(empty()));
-
     }
 
     @Test
-    public void gaugeRegistrationViaWhiteboard() throws Exception{
+    public void gaugeRegistrationViaWhiteboard() throws Exception {
         activate();
-        ServiceRegistration<Gauge> reg = context.bundleContext().registerService(Gauge.class, new TestGauge(42),
-                MapUtil.toDictionary(Gauge.NAME, "foo"));
+        ServiceRegistration<Gauge> reg = context.bundleContext()
+                .registerService(Gauge.class, new TestGauge(42), MapUtil.toDictionary(Gauge.NAME, "foo"));
 
         assertTrue(getRegistry().getGauges().containsKey("foo"));
         assertEquals(42, getRegistry().getGauges().get("foo").getValue());
@@ -176,20 +174,18 @@ public class MetricServiceTest {
         reg.unregister();
         assertFalse(getRegistry().getGauges().containsKey("foo"));
     }
-    
-    
+
     @Test
     public void unregisterMetric() {
         activate();
-        Gauge<Long> gauge = service.gauge("gauge",() -> 42L);
+        Gauge<Long> gauge = service.gauge("gauge", () -> 42L);
         assertNotNull(gauge);
         assertTrue(getRegistry().getGauges().containsKey("gauge"));
         service.unregister("gauge");
         assertFalse(getRegistry().getGauges().containsKey("gauge"));
     }
-    
 
-    private MetricRegistry getRegistry(){
+    private MetricRegistry getRegistry() {
         return context.getService(MetricRegistry.class);
     }
 
@@ -200,7 +196,7 @@ public class MetricServiceTest {
     private static class TestGauge implements Gauge {
         int value;
 
-        public TestGauge(int value){
+        public TestGauge(int value) {
             this.value = value;
         }
 
@@ -209,5 +205,4 @@ public class MetricServiceTest {
             return value;
         }
     }
-
 }

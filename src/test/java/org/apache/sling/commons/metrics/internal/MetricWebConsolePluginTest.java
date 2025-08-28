@@ -16,21 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.commons.metrics.internal;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-
-
+import javax.servlet.http.HttpServletRequest;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -39,8 +27,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
+import com.codahale.metrics.JvmAttributeGaugeSet;
+import com.codahale.metrics.MetricRegistry;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlTable;
 import org.apache.felix.inventory.Format;
 import org.apache.felix.utils.json.JSONParser;
 import org.apache.sling.testing.mock.osgi.MockOsgi;
@@ -50,11 +41,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import com.codahale.metrics.JvmAttributeGaugeSet;
-import com.codahale.metrics.MetricRegistry;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.html.HtmlTable;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MetricWebConsolePluginTest {
@@ -79,7 +75,7 @@ public class MetricWebConsolePluginTest {
 
         MetricRegistry consolidated = plugin.getConsolidatedRegistry();
 
-        //Check name decoration
+        // Check name decoration
         assertEquals(1, consolidated.getMetrics().size());
         assertTrue(consolidated.getMeters().containsKey("foo:test1"));
 
@@ -87,13 +83,13 @@ public class MetricWebConsolePluginTest {
         reg2.meter("test2");
         context.registerService(MetricRegistry.class, reg2);
 
-        //Metric Registry without name would not be decorated
+        // Metric Registry without name would not be decorated
         consolidated = plugin.getConsolidatedRegistry();
         assertEquals(2, consolidated.getMetrics().size());
         assertTrue(consolidated.getMeters().containsKey("test2"));
 
-        //Duplicate metric in other registry should not fail. Warning log
-        //should be generated
+        // Duplicate metric in other registry should not fail. Warning log
+        // should be generated
         MetricRegistry reg3 = new MetricRegistry();
         reg3.meter("test2");
         context.registerService(MetricRegistry.class, reg3);
@@ -127,7 +123,7 @@ public class MetricWebConsolePluginTest {
     }
 
     @Test
-    public void inventory_json() throws Exception{
+    public void inventory_json() throws Exception {
         MetricRegistry reg1 = new MetricRegistry();
         reg1.meter("test1").mark(5);
         context.registerService(MetricRegistry.class, reg1, regProps("foo"));
@@ -157,9 +153,10 @@ public class MetricWebConsolePluginTest {
 
         plugin.doGet(mock(HttpServletRequest.class), context.response());
 
-        try (WebClient client = new WebClient();) {
-            HtmlPage page = client.loadHtmlCodeIntoCurrentWindow(context.response().getOutputAsString());
-    
+        try (WebClient client = new WebClient(); ) {
+            HtmlPage page =
+                    client.loadHtmlCodeIntoCurrentWindow(context.response().getOutputAsString());
+
             assertTable("data-meters", page);
             assertTable("data-counters", page);
             assertTable("data-timers", page);
@@ -172,9 +169,8 @@ public class MetricWebConsolePluginTest {
         HtmlTable table = page.getHtmlElementById(name);
         assertNotNull(table);
 
-        //1 for header and 1 for actual metric row
+        // 1 for header and 1 for actual metric row
         assertThat(table.getRowCount(), greaterThanOrEqualTo(2));
-
     }
 
     private void activatePlugin() {
@@ -182,7 +178,6 @@ public class MetricWebConsolePluginTest {
     }
 
     private static class CloseRecordingWriter extends PrintWriter {
-
 
         public CloseRecordingWriter(Writer out) {
             super(out);

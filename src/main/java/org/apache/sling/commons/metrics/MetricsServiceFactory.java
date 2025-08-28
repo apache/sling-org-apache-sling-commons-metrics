@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.commons.metrics;
 
 import org.osgi.framework.Bundle;
@@ -30,33 +29,32 @@ import org.osgi.framework.ServiceReference;
  *  as it is to get a Logger, for example.
  */
 public class MetricsServiceFactory {
-    
-    /** Provide a MetricsService mapped to the Bundle that loaded class c 
+
+    /** Provide a MetricsService mapped to the Bundle that loaded class c
      *  @param c a Class loaded by an OSGi bundle
      *  @return a MetricsService
      */
     public static MetricsService getMetricsService(Class<?> c) {
-        if(c == null) {
+        if (c == null) {
             throw new IllegalArgumentException("Class parameter is required");
         }
-        
+
         final Bundle b = FrameworkUtil.getBundle(c);
-        if(b == null) {
-            throw new IllegalArgumentException("No BundleContext, Class was not loaded from a Bundle?: " 
+        if (b == null) {
+            throw new IllegalArgumentException("No BundleContext, Class was not loaded from a Bundle?: "
                     + c.getClass().getName());
         }
-        
+
         final BundleContext ctx = b.getBundleContext();
 
         // In theory we should unget this reference, but the OSGi framework
         // ungets all references held by a bundle when it stops and we cannot
         // do much better than that anyway.
         final ServiceReference ref = ctx.getServiceReference(MetricsService.class.getName());
-        if(ref == null) {
-            throw new IllegalStateException("MetricsService not found for Bundle "
-                    + b.getSymbolicName());
+        if (ref == null) {
+            throw new IllegalStateException("MetricsService not found for Bundle " + b.getSymbolicName());
         }
-        
-        return (MetricsService)ctx.getService(ref);
+
+        return (MetricsService) ctx.getService(ref);
     }
 }

@@ -16,9 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.commons.metrics.internal;
-
 
 import org.apache.sling.commons.metrics.Gauge;
 import org.apache.sling.commons.metrics.Metric;
@@ -33,7 +31,7 @@ public class GaugeImpl<T> implements Gauge<T>, Metric {
 
     @Override
     public <A> A adaptTo(Class<A> type) {
-        if (type == com.codahale.metrics.Gauge.class){
+        if (type == com.codahale.metrics.Gauge.class) {
             return (A) gauge;
         }
         return null;
@@ -43,5 +41,4 @@ public class GaugeImpl<T> implements Gauge<T>, Metric {
     public T getValue() {
         return this.gauge.getValue();
     }
-
 }

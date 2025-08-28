@@ -16,16 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.commons.metrics.internal;
+
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
 
 import java.util.Hashtable;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.ObjectNameFactory;
@@ -33,7 +32,7 @@ import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class BundleMetricsMapper implements ObjectNameFactory{
+class BundleMetricsMapper implements ObjectNameFactory {
     public static final String HEADER_DOMAIN_NAME = "Sling-Metrics-Domain";
     public static final String DEFAULT_DOMAIN_NAME = "org.apache.sling";
     static final String JMX_TYPE_METRICS = "Metrics";
@@ -52,7 +51,7 @@ class BundleMetricsMapper implements ObjectNameFactory{
     }
 
     public boolean unregister(Set<String> registeredNames) {
-        for (String name : registeredNames){
+        for (String name : registeredNames) {
             registry.remove(name);
             metricToBundleMapping.remove(name);
             metricsService.remove(name);
@@ -85,17 +84,16 @@ class BundleMetricsMapper implements ObjectNameFactory{
     }
 
     private String getDomainName(Bundle bundle) {
-        if (bundle == null){
+        if (bundle == null) {
             return null;
         }
 
         String domainNameHeader = bundle.getHeaders().get(HEADER_DOMAIN_NAME);
-        if (domainNameHeader != null){
+        if (domainNameHeader != null) {
             return domainNameHeader;
         }
 
-        //Fallback to symbolic name
+        // Fallback to symbolic name
         return bundle.getSymbolicName();
     }
-
 }

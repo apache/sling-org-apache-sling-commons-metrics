@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.commons.metrics.internal;
 
 import junit.framework.TestCase;
@@ -28,24 +27,23 @@ import static org.junit.Assert.assertTrue;
 public class JmxUtilTest {
 
     @Test
-    public void quotation() throws Exception{
+    public void quotation() throws Exception {
         assertEquals("text", JmxUtil.quoteValueIfRequired("text"));
         TestCase.assertEquals("", JmxUtil.quoteValueIfRequired(""));
         assertTrue(JmxUtil.quoteValueIfRequired("text*with?chars").startsWith("\""));
     }
 
     @Test
-    public void quoteAndComma() throws Exception{
+    public void quoteAndComma() throws Exception {
         assertTrue(JmxUtil.quoteValueIfRequired("text,withComma").startsWith("\""));
         assertTrue(JmxUtil.quoteValueIfRequired("text=withEqual").startsWith("\""));
     }
 
     @Test
-    public void safeDomainName() throws Exception{
+    public void safeDomainName() throws Exception {
         assertEquals("com.foo", JmxUtil.safeDomainName("com.foo"));
         assertEquals("com_foo", JmxUtil.safeDomainName("com:foo"));
         assertEquals("com_foo", JmxUtil.safeDomainName("com?foo"));
         assertEquals("com_foo", JmxUtil.safeDomainName("com*foo"));
     }
-
 }

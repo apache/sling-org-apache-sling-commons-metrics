@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.commons.metrics.internal;
 
 import org.apache.sling.commons.metrics.Meter;
@@ -46,8 +45,8 @@ final class MeterImpl implements Meter {
     @SuppressWarnings("unchecked")
     @Override
     public <A> A adaptTo(Class<A> type) {
-        if (type == com.codahale.metrics.Meter.class){
-            return (A)meter;
+        if (type == com.codahale.metrics.Meter.class) {
+            return (A) meter;
         }
         return null;
     }

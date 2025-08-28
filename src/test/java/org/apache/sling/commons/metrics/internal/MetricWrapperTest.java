@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.commons.metrics.internal;
 
 import java.util.concurrent.TimeUnit;
@@ -108,7 +107,7 @@ public class MetricWrapperTest {
     }
 
     @Test
-    public void timerContext() throws Exception{
+    public void timerContext() throws Exception {
         VirtualClock clock = new VirtualClock();
         Timer time = new Timer(new ExponentiallyDecayingReservoir(), clock);
 
@@ -124,6 +123,7 @@ public class MetricWrapperTest {
 
     private static class VirtualClock extends com.codahale.metrics.Clock {
         long tick;
+
         @Override
         public long getTick() {
             return tick;

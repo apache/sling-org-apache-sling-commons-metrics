@@ -16,9 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.commons.metrics;
-
 
 import org.osgi.annotation.versioning.ProviderType;
 
@@ -26,7 +24,7 @@ import org.osgi.annotation.versioning.ProviderType;
  * A meter metric which measures mean throughput
  */
 @ProviderType
-public interface Meter extends Counting, Metric{
+public interface Meter extends Counting, Metric {
     /**
      * Mark the occurrence of an event.
      */

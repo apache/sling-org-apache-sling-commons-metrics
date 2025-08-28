@@ -16,9 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.commons.metrics.internal;
-
 
 import org.apache.sling.commons.metrics.Histogram;
 
@@ -42,7 +40,7 @@ final class HistogramImpl implements Histogram {
     @SuppressWarnings("unchecked")
     @Override
     public <A> A adaptTo(Class<A> type) {
-        if (type == com.codahale.metrics.Histogram.class){
+        if (type == com.codahale.metrics.Histogram.class) {
             return (A) histogram;
         }
         return null;

@@ -28,6 +28,7 @@ import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
+
 import static org.apache.sling.testing.paxexam.SlingOptions.scr;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
@@ -42,14 +43,19 @@ public class MetricsServiceFactoryIT extends TestSupport {
     @Configuration
     public Option[] configuration() {
         return options(
-            baseConfiguration(),
-            scr(),
-            // Commons Metrics
-            testBundle("bundle.filename"),
-            mavenBundle().groupId("io.dropwizard.metrics").artifactId("metrics-core").versionAsInProject(),
-            mavenBundle().groupId("org.apache.commons").artifactId("commons-lang3").versionAsInProject(),
-            junitBundles()
-        );
+                baseConfiguration(),
+                scr(),
+                // Commons Metrics
+                testBundle("bundle.filename"),
+                mavenBundle()
+                        .groupId("io.dropwizard.metrics")
+                        .artifactId("metrics-core")
+                        .versionAsInProject(),
+                mavenBundle()
+                        .groupId("org.apache.commons")
+                        .artifactId("commons-lang3")
+                        .versionAsInProject(),
+                junitBundles());
     }
 
     @Test
@@ -75,5 +81,4 @@ public class MetricsServiceFactoryIT extends TestSupport {
         final MetricsService m = MetricsServiceFactory.getMetricsService(getClass());
         assertNotNull("Expecting a MetricsService", m);
     }
-
 }

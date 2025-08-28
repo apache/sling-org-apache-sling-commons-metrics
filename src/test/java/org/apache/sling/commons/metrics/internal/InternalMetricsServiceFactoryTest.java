@@ -16,26 +16,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.commons.metrics.internal;
 
-import com.codahale.metrics.MetricRegistry;
 import javax.management.ObjectName;
 
+import com.codahale.metrics.MetricRegistry;
 import org.apache.sling.commons.metrics.Counter;
 import org.apache.sling.commons.metrics.MetricsService;
 import org.apache.sling.testing.mock.osgi.MockBundle;
 import org.apache.sling.testing.mock.osgi.junit.OsgiContext;
-import static org.junit.Assert.*;
 import org.junit.Rule;
 import org.junit.Test;
-import static org.mockito.Mockito.mock;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceRegistration;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 public class InternalMetricsServiceFactoryTest {
     @Rule
     public final OsgiContext context = new OsgiContext();
+
     private MetricsServiceImpl serviceImpl = new MetricsServiceImpl();
     private MetricRegistry registry = serviceImpl.getRegistry();
     private BundleMetricsMapper mapper = new BundleMetricsMapper(serviceImpl, registry);
@@ -43,7 +44,7 @@ public class InternalMetricsServiceFactoryTest {
     private ServiceRegistration<MetricsService> reg = mock(ServiceRegistration.class);
 
     @Test
-    public void basicWorking() throws Exception{
+    public void basicWorking() throws Exception {
         MetricsService service = srvFactory.getService(cb("foo"), reg);
         service.meter("m1");
         service.timer("t1");
@@ -56,12 +57,12 @@ public class InternalMetricsServiceFactoryTest {
 
         ObjectName name = mapper.createName("meter", "com.foo", "m1");
 
-        //Domain name should be bundle symbolic name
+        // Domain name should be bundle symbolic name
         assertEquals("foo", name.getDomain());
     }
 
     @Test
-    public void unRegistration() throws Exception{
+    public void unRegistration() throws Exception {
         Bundle foo = cb("foo");
         Bundle bar = cb("bar");
         MetricsService srv1 = srvFactory.getService(foo, reg);
@@ -77,22 +78,20 @@ public class InternalMetricsServiceFactoryTest {
 
         srvFactory.ungetService(foo, reg, srv1);
 
-        //Metrics from 'foo' bundle i.e. m1 and c1 must be removed
+        // Metrics from 'foo' bundle i.e. m1 and c1 must be removed
         assertFalse(registry.getMeters().containsKey("m1"));
         assertFalse(registry.getCounters().containsKey("c1"));
 
         assertNotEquals("The MetricsService should not return stale metric references.", c1, serviceImpl.counter("c1"));
         assertTrue(registry.getCounters().containsKey("c1"));
 
-        //Metrics from 'bar' bundle should be present
+        // Metrics from 'bar' bundle should be present
         assertTrue(registry.getMeters().containsKey("m2"));
     }
 
-    private Bundle cb(String name){
+    private Bundle cb(String name) {
         MockBundle bundle = new MockBundle(context.bundleContext());
         bundle.setSymbolicName(name);
         return bundle;
     }
-
-
 }

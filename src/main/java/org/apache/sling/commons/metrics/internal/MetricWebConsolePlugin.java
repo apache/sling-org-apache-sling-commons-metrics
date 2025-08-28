@@ -16,8 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.commons.metrics.internal;
+
+import javax.servlet.Servlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -29,11 +33,6 @@ import java.util.SortedMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
-
-import javax.servlet.Servlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.Counter;
@@ -57,29 +56,29 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Component(service = {InventoryPrinter.class, Servlet.class},
+@Component(
+        service = {InventoryPrinter.class, Servlet.class},
         property = {
-                "felix.webconsole.label=slingmetrics",
-                "felix.webconsole.title=Metrics",
-                "felix.webconsole.category=Sling",
-                InventoryPrinter.FORMAT + "=TEXT",
-                InventoryPrinter.FORMAT + "=JSON",
-                InventoryPrinter.TITLE + "=Sling Metrics",
-                InventoryPrinter.NAME + "=slingmetrics"
-        }
-)
-public class MetricWebConsolePlugin extends HttpServlet implements
-        InventoryPrinter, ServiceTrackerCustomizer<MetricRegistry, MetricRegistry>{
+            "felix.webconsole.label=slingmetrics",
+            "felix.webconsole.title=Metrics",
+            "felix.webconsole.category=Sling",
+            InventoryPrinter.FORMAT + "=TEXT",
+            InventoryPrinter.FORMAT + "=JSON",
+            InventoryPrinter.TITLE + "=Sling Metrics",
+            InventoryPrinter.NAME + "=slingmetrics"
+        })
+public class MetricWebConsolePlugin extends HttpServlet
+        implements InventoryPrinter, ServiceTrackerCustomizer<MetricRegistry, MetricRegistry> {
     /**
      * Service property name which stores the MetricRegistry name as a given OSGi
      * ServiceRegistry might have multiple instances of MetricRegistry
      */
     public static final String METRIC_REGISTRY_NAME = "name";
+
     private final Logger log = LoggerFactory.getLogger(getClass());
     private BundleContext context;
     private ServiceTracker<MetricRegistry, MetricRegistry> tracker;
-    private ConcurrentMap<ServiceReference, MetricRegistry> registries
-            = new ConcurrentHashMap<>();
+    private ConcurrentMap<ServiceReference, MetricRegistry> registries = new ConcurrentHashMap<>();
 
     private TimeUnit rateUnit = TimeUnit.SECONDS;
     private TimeUnit durationUnit = TimeUnit.MILLISECONDS;
@@ -88,7 +87,7 @@ public class MetricWebConsolePlugin extends HttpServlet implements
     private MetricTimeUnits timeUnit;
 
     @Activate
-    private void activate(BundleContext context){
+    private void activate(BundleContext context) {
         this.context = context;
         this.timeUnit = new MetricTimeUnits(rateUnit, durationUnit, specificRateUnits, specificDurationUnits);
         tracker = new ServiceTracker<>(context, MetricRegistry.class, this);
@@ -96,11 +95,11 @@ public class MetricWebConsolePlugin extends HttpServlet implements
     }
 
     @Deactivate
-    private void deactivate(BundleContext context){
+    private void deactivate(BundleContext context) {
         tracker.close();
     }
 
-    //~--------------------------------------------< InventoryPrinter >
+    // ~--------------------------------------------< InventoryPrinter >
 
     @Override
     public void print(PrintWriter printWriter, Format format, boolean isZip) {
@@ -121,8 +120,7 @@ public class MetricWebConsolePlugin extends HttpServlet implements
         }
     }
 
-
-    //~---------------------------------------------< ServiceTracker >
+    // ~---------------------------------------------< ServiceTracker >
 
     @Override
     public MetricRegistry addingService(ServiceReference<MetricRegistry> serviceReference) {
@@ -141,7 +139,7 @@ public class MetricWebConsolePlugin extends HttpServlet implements
         registries.remove(serviceReference);
     }
 
-    //~----------------------------------------------< Servlet >
+    // ~----------------------------------------------< Servlet >
 
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
@@ -340,7 +338,6 @@ public class MetricWebConsolePlugin extends HttpServlet implements
             pw.printf("<td>%f</td>", s.get99thPercentile());
             pw.printf("<td>%f</td>", s.get999thPercentile());
 
-
             pw.println("</tr>");
             rowClass = "odd".equals(rowClass) ? "even" : "odd";
         }
@@ -421,21 +418,21 @@ public class MetricWebConsolePlugin extends HttpServlet implements
         pw.println("</div>");
     }
 
-
-    //~----------------------------------------------< internal >
+    // ~----------------------------------------------< internal >
 
     MetricRegistry getConsolidatedRegistry() {
         MetricRegistry registry = new MetricRegistry();
-        for (Map.Entry<ServiceReference, MetricRegistry> registryEntry : registries.entrySet()){
+        for (Map.Entry<ServiceReference, MetricRegistry> registryEntry : registries.entrySet()) {
             String metricRegistryName = (String) registryEntry.getKey().getProperty(METRIC_REGISTRY_NAME);
-            for (Map.Entry<String, Metric> metricEntry : registryEntry.getValue().getMetrics().entrySet()){
+            for (Map.Entry<String, Metric> metricEntry :
+                    registryEntry.getValue().getMetrics().entrySet()) {
                 String metricName = metricEntry.getKey();
-                try{
-                    if (metricRegistryName != null){
+                try {
+                    if (metricRegistryName != null) {
                         metricName = metricRegistryName + ":" + metricName;
                     }
                     registry.register(metricName, metricEntry.getValue());
-                }catch (IllegalArgumentException ex){
+                } catch (IllegalArgumentException ex) {
                     log.warn("Duplicate Metric name found {}", metricName, ex);
                 }
             }
@@ -454,10 +451,11 @@ public class MetricWebConsolePlugin extends HttpServlet implements
         private final Map<String, TimeUnit> rateOverrides;
         private final Map<String, TimeUnit> durationOverrides;
 
-        MetricTimeUnits(TimeUnit defaultRate,
-                        TimeUnit defaultDuration,
-                        Map<String, TimeUnit> rateOverrides,
-                        Map<String, TimeUnit> durationOverrides) {
+        MetricTimeUnits(
+                TimeUnit defaultRate,
+                TimeUnit defaultDuration,
+                Map<String, TimeUnit> rateOverrides,
+                Map<String, TimeUnit> durationOverrides) {
             this.defaultRate = defaultRate;
             this.defaultDuration = defaultDuration;
             this.rateOverrides = rateOverrides;

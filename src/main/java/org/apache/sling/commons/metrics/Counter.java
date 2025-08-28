@@ -16,9 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.commons.metrics;
-
 
 import org.osgi.annotation.versioning.ProviderType;
 
@@ -26,7 +24,7 @@ import org.osgi.annotation.versioning.ProviderType;
  * An incrementing and decrementing counter metric.
  */
 @ProviderType
-public interface Counter extends Counting, Metric{
+public interface Counter extends Counting, Metric {
     /**
      * Increment the counter by one.
      */

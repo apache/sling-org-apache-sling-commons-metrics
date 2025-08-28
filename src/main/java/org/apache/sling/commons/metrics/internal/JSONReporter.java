@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.commons.metrics.internal;
 
 import java.io.Closeable;
@@ -28,8 +27,6 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.felix.utils.json.JSONWriter;
-
 import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
@@ -40,6 +37,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Reporter;
 import com.codahale.metrics.Snapshot;
 import com.codahale.metrics.Timer;
+import org.apache.felix.utils.json.JSONWriter;
 
 class JSONReporter implements Reporter, Closeable {
 
@@ -112,11 +110,7 @@ class JSONReporter implements Reporter, Closeable {
          * @return a {@link ConsoleReporter}
          */
         public JSONReporter build() {
-            return new JSONReporter(registry,
-                    output,
-                    rateUnit,
-                    durationUnit,
-                    filter);
+            return new JSONReporter(registry, output, rateUnit, durationUnit, filter);
         }
     }
 
@@ -129,8 +123,12 @@ class JSONReporter implements Reporter, Closeable {
     private final JSONWriter json;
     private final PrintWriter pw;
 
-    private JSONReporter(MetricRegistry registry,
-                         PrintStream output, TimeUnit rateUnit, TimeUnit durationUnit, MetricFilter filter){
+    private JSONReporter(
+            MetricRegistry registry,
+            PrintStream output,
+            TimeUnit rateUnit,
+            TimeUnit durationUnit,
+            MetricFilter filter) {
         this.registry = registry;
         this.filter = filter;
         this.pw = new PrintWriter(output);
@@ -143,7 +141,8 @@ class JSONReporter implements Reporter, Closeable {
 
     public void report() {
         try {
-            report(registry.getGauges(filter),
+            report(
+                    registry.getGauges(filter),
                     registry.getCounters(filter),
                     registry.getHistograms(filter),
                     registry.getMeters(filter),
@@ -154,13 +153,17 @@ class JSONReporter implements Reporter, Closeable {
     }
 
     @Override
-    public void close(){
+    public void close() {
         pw.flush();
     }
 
-    private void report(SortedMap<String, Gauge> gauges, SortedMap<String, Counter> counters,
-                        SortedMap<String, Histogram> histograms, SortedMap<String, Meter> meters,
-                        SortedMap<String, Timer> timers) throws IOException {
+    private void report(
+            SortedMap<String, Gauge> gauges,
+            SortedMap<String, Counter> counters,
+            SortedMap<String, Histogram> histograms,
+            SortedMap<String, Meter> meters,
+            SortedMap<String, Timer> timers)
+            throws IOException {
         json.object();
         if (!gauges.isEmpty()) {
             json.key("gauges").object();
@@ -203,7 +206,6 @@ class JSONReporter implements Reporter, Closeable {
         }
 
         json.endObject();
-
     }
 
     private void printTimer(Map.Entry<String, Timer> e) throws IOException {
@@ -278,12 +280,12 @@ class JSONReporter implements Reporter, Closeable {
         json.endObject();
     }
 
-    private static Object jsonSafeValue(Object v){
-        //Json does not allow NaN or infinite doubles. So take care of that
-        if (v instanceof Number){
-            if (v instanceof Double){
+    private static Object jsonSafeValue(Object v) {
+        // Json does not allow NaN or infinite doubles. So take care of that
+        if (v instanceof Number) {
+            if (v instanceof Double) {
                 Double d = (Double) v;
-                if (d.isInfinite() || d.isNaN()){
+                if (d.isInfinite() || d.isNaN()) {
                     return d.toString();
                 }
             }
@@ -295,5 +297,4 @@ class JSONReporter implements Reporter, Closeable {
         final String s = unit.toString().toLowerCase(Locale.US);
         return s.substring(0, s.length() - 1);
     }
-
 }

@@ -1,20 +1,25 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.apache.sling.commons.metrics.internal;
+
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 import com.codahale.metrics.Metric;
 import com.codahale.metrics.MetricFilter;
@@ -33,10 +38,9 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
-
-@Component(service = {}, configurationPolicy = ConfigurationPolicy.REQUIRE)
+@Component(
+        service = {},
+        configurationPolicy = ConfigurationPolicy.REQUIRE)
 @Designate(ocd = LogReporter.Config.class, factory = true)
 public class LogReporter implements ServiceTrackerCustomizer<MetricRegistry, Slf4jReporter> {
 
@@ -57,18 +61,19 @@ public class LogReporter implements ServiceTrackerCustomizer<MetricRegistry, Slf
         tracker.close();
     }
 
-    //~---------------------------------------------< ServiceTracker >
+    // ~---------------------------------------------< ServiceTracker >
 
     @Override
     public Slf4jReporter addingService(ServiceReference<MetricRegistry> serviceReference) {
         MetricRegistry registry = context.getService(serviceReference);
         String metricRegistryName = (String) serviceReference.getProperty(MetricWebConsolePlugin.METRIC_REGISTRY_NAME);
 
-        if (config.registryName() == null || config.registryName().length() == 0
+        if (config.registryName() == null
+                || config.registryName().length() == 0
                 || config.registryName().equals(metricRegistryName)) {
-            Slf4jReporter.Builder builder = Slf4jReporter.forRegistry(registry).
-                    outputTo(LoggerFactory.getLogger(config.loggerName())).
-                    withLoggingLevel(config.level());
+            Slf4jReporter.Builder builder = Slf4jReporter.forRegistry(registry)
+                    .outputTo(LoggerFactory.getLogger(config.loggerName()))
+                    .withLoggingLevel(config.level());
 
             if (config.prefix() != null && config.prefix().length() > 0) {
                 builder.filter(new PrefixFilter(config.prefix()));
@@ -137,14 +142,17 @@ public class LogReporter implements ServiceTrackerCustomizer<MetricRegistry, Slf
         @AttributeDefinition(description = "The logger name")
         String loggerName() default "metrics";
 
-        @AttributeDefinition(description = "If specified, only metrics whose name starts with this value are logged. If both prefix and pattern are set, prefix is used.")
+        @AttributeDefinition(
+                description =
+                        "If specified, only metrics whose name starts with this value are logged. If both prefix and pattern are set, prefix is used.")
         String prefix() default "";
 
-        @AttributeDefinition(description = "If specified, only metrics whose name matches this regular expression will be logged. If both prefix and pattern are set, prefix is used.")
+        @AttributeDefinition(
+                description =
+                        "If specified, only metrics whose name matches this regular expression will be logged. If both prefix and pattern are set, prefix is used.")
         String pattern() default "";
 
         @AttributeDefinition(description = "Restrict the metrics logged to a specifically named registry.")
         String registryName() default "";
     }
-
 }

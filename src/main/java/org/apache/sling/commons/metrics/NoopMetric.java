@@ -16,12 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.commons.metrics;
 
 import java.util.concurrent.TimeUnit;
 
-enum NoopMetric implements Counter, Histogram, Timer, Meter{
+enum NoopMetric implements Counter, Histogram, Timer, Meter {
     INSTANCE;
 
     @Override
@@ -30,39 +29,25 @@ enum NoopMetric implements Counter, Histogram, Timer, Meter{
     }
 
     @Override
-    public void increment() {
-
-    }
+    public void increment() {}
 
     @Override
-    public void decrement() {
-
-    }
+    public void decrement() {}
 
     @Override
-    public void increment(long n) {
-
-    }
+    public void increment(long n) {}
 
     @Override
-    public void decrement(long n) {
-
-    }
+    public void decrement(long n) {}
 
     @Override
-    public void mark() {
-
-    }
+    public void mark() {}
 
     @Override
-    public void mark(long n) {
-
-    }
+    public void mark(long n) {}
 
     @Override
-    public void update(long duration, TimeUnit unit) {
-
-    }
+    public void update(long duration, TimeUnit unit) {}
 
     @Override
     public Context time() {
@@ -70,9 +55,7 @@ enum NoopMetric implements Counter, Histogram, Timer, Meter{
     }
 
     @Override
-    public void update(long value) {
-
-    }
+    public void update(long value) {}
 
     @Override
     public <AdapterType> AdapterType adaptTo(Class<AdapterType> type) {
@@ -88,8 +71,6 @@ enum NoopMetric implements Counter, Histogram, Timer, Meter{
         }
 
         @Override
-        public void close() {
-
-        }
+        public void close() {}
     }
 }

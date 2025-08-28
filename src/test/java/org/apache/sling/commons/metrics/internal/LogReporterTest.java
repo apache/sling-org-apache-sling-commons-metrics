@@ -1,20 +1,25 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.apache.sling.commons.metrics.internal;
+
+import java.lang.annotation.Annotation;
+import java.util.concurrent.TimeUnit;
 
 import com.codahale.metrics.MetricFilter;
 import com.codahale.metrics.MetricRegistry;
@@ -28,12 +33,8 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 
-
-import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
-
-import java.lang.annotation.Annotation;
-import java.util.concurrent.TimeUnit;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LogReporterTest {
@@ -48,7 +49,8 @@ public class LogReporterTest {
         MetricRegistry registry = new MetricRegistry();
         ServiceReference<MetricRegistry> registryServiceReference = mock(ServiceReference.class);
         when(bundleContext.getService(registryServiceReference)).thenReturn(registry);
-        when(registryServiceReference.getProperty(MetricWebConsolePlugin.METRIC_REGISTRY_NAME)).thenReturn("oak");
+        when(registryServiceReference.getProperty(MetricWebConsolePlugin.METRIC_REGISTRY_NAME))
+                .thenReturn("oak");
 
         LogReporter.Config config = createConfigWithRegistryName("oak");
         reporterService.activate(config, bundleContext);
@@ -70,7 +72,8 @@ public class LogReporterTest {
         MetricRegistry registry = new MetricRegistry();
         ServiceReference<MetricRegistry> registryServiceReference = mock(ServiceReference.class);
         when(bundleContext.getService(registryServiceReference)).thenReturn(registry);
-        when(registryServiceReference.getProperty(MetricWebConsolePlugin.METRIC_REGISTRY_NAME)).thenReturn("other");
+        when(registryServiceReference.getProperty(MetricWebConsolePlugin.METRIC_REGISTRY_NAME))
+                .thenReturn("other");
 
         LogReporter.Config config = createConfigWithRegistryName("oak");
         reporterService.activate(config, bundleContext);
@@ -271,7 +274,8 @@ public class LogReporterTest {
         };
     }
 
-    private LogReporter.Config createConfigWithLoggerNameAndLevel(final String loggerName, final Slf4jReporter.LoggingLevel level) {
+    private LogReporter.Config createConfigWithLoggerNameAndLevel(
+            final String loggerName, final Slf4jReporter.LoggingLevel level) {
         return new LogReporter.Config() {
             @Override
             public long period() {

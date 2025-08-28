@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.commons.metrics.internal;
 
 import javax.management.ObjectName;
@@ -33,18 +32,19 @@ import static org.junit.Assert.*;
 public class BundleMetricsMapperTest {
     @Rule
     public final OsgiContext context = new OsgiContext();
+
     private MetricRegistry registry = new MetricRegistry();
 
     private BundleMetricsMapper mapper = new BundleMetricsMapper(new MetricsServiceImpl(), registry);
 
     @Test
-    public void defaultDomainName() throws Exception{
+    public void defaultDomainName() throws Exception {
         ObjectName name = mapper.createName("counter", "foo", "bar");
         assertEquals("foo", name.getDomain());
     }
 
     @Test
-    public void mappedName_SymbolicName() throws Exception{
+    public void mappedName_SymbolicName() throws Exception {
         MockBundle bundle = new MockBundle(context.bundleContext());
         bundle.setSymbolicName("com.example");
 
@@ -55,7 +55,7 @@ public class BundleMetricsMapperTest {
     }
 
     @Test
-    public void mappedName_Header() throws Exception{
+    public void mappedName_Header() throws Exception {
         MockBundle bundle = new MockBundle(context.bundleContext());
         bundle.setSymbolicName("com.example");
         bundle.setHeaders(ImmutableMap.of(BundleMetricsMapper.HEADER_DOMAIN_NAME, "com.test"));
@@ -65,6 +65,4 @@ public class BundleMetricsMapperTest {
         ObjectName name = mapper.createName("counter", "foo", "bar");
         assertEquals("com.test", name.getDomain());
     }
-
-
 }

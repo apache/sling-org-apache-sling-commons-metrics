@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.commons.metrics.internal;
 
 import java.util.Collections;
@@ -50,7 +49,7 @@ class InternalMetricsServiceFactory implements ServiceFactory<MetricsService> {
 
     @Override
     public void ungetService(Bundle bundle, ServiceRegistration<MetricsService> registration, MetricsService service) {
-        if (service instanceof BundleMetricService){
+        if (service instanceof BundleMetricService) {
             ((BundleMetricService) service).unregister();
         }
     }
@@ -92,7 +91,7 @@ class InternalMetricsServiceFactory implements ServiceFactory<MetricsService> {
             return delegate.adaptTo(type);
         }
 
-        void unregister(){
+        void unregister() {
             metricsMapper.unregister(registeredNames);
         }
 
@@ -111,6 +110,5 @@ class InternalMetricsServiceFactory implements ServiceFactory<MetricsService> {
         public boolean unregister(String name) {
             return metricsMapper.unregister(Collections.singleton(name));
         }
-
     }
 }

@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.commons.metrics.internal;
 
 import java.io.Closeable;
@@ -46,14 +45,17 @@ class GaugeManager implements ServiceTrackerCustomizer<Gauge, GaugeManager.Gauge
         tracker.open();
     }
 
-    //~-------------------------------------< ServiceTrackerCustomizer >
+    // ~-------------------------------------< ServiceTrackerCustomizer >
 
     @Override
     public GaugeImpl addingService(ServiceReference<Gauge> reference) {
         String name = (String) reference.getProperty(Gauge.NAME);
-        if (name == null){
-            log.warn("A {} service is registered without [{}] property. This Gauge would not be " +
-                    "registered with MetricsRegistry", reference, Gauge.NAME);
+        if (name == null) {
+            log.warn(
+                    "A {} service is registered without [{}] property. This Gauge would not be "
+                            + "registered with MetricsRegistry",
+                    reference,
+                    Gauge.NAME);
             return null;
         }
 
@@ -66,11 +68,11 @@ class GaugeManager implements ServiceTrackerCustomizer<Gauge, GaugeManager.Gauge
     @Override
     public void modifiedService(ServiceReference<Gauge> reference, GaugeImpl service) {
         String name = (String) reference.getProperty(Gauge.NAME);
-        if (name == null){
+        if (name == null) {
             return;
         }
 
-        if (!name.equals(service.name)){
+        if (!name.equals(service.name)) {
             unregister(service);
             service.name = name;
             register(reference, service);
@@ -82,14 +84,14 @@ class GaugeManager implements ServiceTrackerCustomizer<Gauge, GaugeManager.Gauge
         unregister(service);
     }
 
-    //~------------------------------------< Closeable >
+    // ~------------------------------------< Closeable >
 
     @Override
     public void close() {
         tracker.close();
     }
 
-    //~-------------------------------------< Internal >
+    // ~-------------------------------------< Internal >
 
     private void unregister(GaugeImpl service) {
         mapper.unregister(Collections.singleton(service.name));
@@ -100,7 +102,7 @@ class GaugeManager implements ServiceTrackerCustomizer<Gauge, GaugeManager.Gauge
         registry.register(gaugeImpl.name, gaugeImpl);
     }
 
-    //~--------------------------------------< GaugeImpl >
+    // ~--------------------------------------< GaugeImpl >
 
     public static class GaugeImpl implements com.codahale.metrics.Gauge {
         String name;

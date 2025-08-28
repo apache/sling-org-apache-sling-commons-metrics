@@ -16,13 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.commons.metrics.internal;
 
 import java.util.concurrent.TimeUnit;
 
 import org.apache.sling.commons.metrics.Timer;
-
 
 final class TimerImpl implements Timer {
     private final com.codahale.metrics.Timer timer;

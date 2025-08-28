@@ -16,23 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.commons.metrics.internal;
-
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.StringWriter;
 import java.util.Map;
 
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.JvmAttributeGaugeSet;
+import com.codahale.metrics.MetricRegistry;
 import org.apache.commons.io.output.WriterOutputStream;
 import org.apache.felix.utils.json.JSONParser;
 import org.junit.Test;
 
-import com.codahale.metrics.Gauge;
-import com.codahale.metrics.JvmAttributeGaugeSet;
-import com.codahale.metrics.MetricRegistry;
+import static org.junit.Assert.assertTrue;
 
 public class JSONReporterTest {
 
@@ -55,15 +53,15 @@ public class JSONReporterTest {
         assertTrue(json.containsKey("histograms"));
         assertTrue(json.containsKey("meters"));
 
-        assertTrue(((Map<String, Object>)json.get("meters")).containsKey("test1"));
-        assertTrue(((Map<String, Object>)json.get("timers")).containsKey("test2"));
-        assertTrue(((Map<String, Object>)json.get("counters")).containsKey("test4"));
-        assertTrue(((Map<String, Object>)json.get("histograms")).containsKey("test3"));
+        assertTrue(((Map<String, Object>) json.get("meters")).containsKey("test1"));
+        assertTrue(((Map<String, Object>) json.get("timers")).containsKey("test2"));
+        assertTrue(((Map<String, Object>) json.get("counters")).containsKey("test4"));
+        assertTrue(((Map<String, Object>) json.get("histograms")).containsKey("test3"));
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    public void nan_value() throws Exception{
+    public void nan_value() throws Exception {
         MetricRegistry registry = new MetricRegistry();
 
         registry.register("test", new Gauge<Double>() {
@@ -73,9 +71,8 @@ public class JSONReporterTest {
             }
         });
 
-
         Map<String, Object> json = getJSON(registry);
-        assertTrue(((Map<String, Object>)json.get("gauges")).containsKey("test"));
+        assertTrue(((Map<String, Object>) json.get("gauges")).containsKey("test"));
     }
 
     private static Map<String, Object> getJSON(MetricRegistry registry) throws IOException {
@@ -87,5 +84,4 @@ public class JSONReporterTest {
         reporter.close();
         return new JSONParser(sw.toString()).getParsed();
     }
-
 }

@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.commons.metrics.internal;
 
 import javax.management.MBeanInfo;
@@ -30,12 +29,12 @@ import org.mockito.Mockito;
 
 public class JmxNotificationListenerTest {
 
-    JmxExporterFactory exporter  = new JmxExporterFactory();    
+    JmxExporterFactory exporter = new JmxExporterFactory();
     NotificationListener listener = exporter.listener;
 
     @Test
     public void testHandleNotification() throws Exception {
-        exporter.patterns = new String[] { "test:type=Test" };
+        exporter.patterns = new String[] {"test:type=Test"};
         exporter.server = Mockito.mock(MBeanServer.class);
         MBeanInfo m = Mockito.mock(MBeanInfo.class);
         MBeanServerNotification notification = Mockito.mock(MBeanServerNotification.class);
@@ -46,7 +45,7 @@ public class JmxNotificationListenerTest {
         Mockito.when(m.getAttributes()).thenReturn(new javax.management.MBeanAttributeInfo[0]);
         listener.handleNotification(notification, null);
 
-        //Assert that MBeanInfo attribute methid is called
+        // Assert that MBeanInfo attribute methid is called
         Mockito.verify(m, Mockito.times(1)).getAttributes();
     }
 }

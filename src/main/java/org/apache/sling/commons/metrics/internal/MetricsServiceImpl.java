@@ -16,8 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.commons.metrics.internal;
+
+import javax.management.MBeanServer;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
@@ -30,19 +31,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Supplier;
 
-import javax.management.MBeanServer;
-
 import com.codahale.metrics.JmxReporter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.MetricRegistry.MetricSupplier;
-
-import org.apache.sling.commons.metrics.Meter;
-import org.apache.sling.commons.metrics.MetricsService;
-import org.apache.sling.commons.metrics.Timer;
 import org.apache.sling.commons.metrics.Counter;
 import org.apache.sling.commons.metrics.Gauge;
 import org.apache.sling.commons.metrics.Histogram;
+import org.apache.sling.commons.metrics.Meter;
 import org.apache.sling.commons.metrics.Metric;
+import org.apache.sling.commons.metrics.MetricsService;
+import org.apache.sling.commons.metrics.Timer;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
@@ -52,7 +50,9 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 
-@Component(service = {}, immediate = true)
+@Component(
+        service = {},
+        immediate = true)
 public class MetricsServiceImpl implements MetricsService {
     private final List<ServiceRegistration> regs = new ArrayList<>();
     private final ConcurrentMap<String, Metric> metrics = new ConcurrentHashMap<>();
@@ -79,8 +79,8 @@ public class MetricsServiceImpl implements MetricsService {
         final Dictionary<String, String> svcProps = new Hashtable<>();
         svcProps.put(Constants.SERVICE_DESCRIPTION, "Apache Sling Metrics Service");
         svcProps.put(Constants.SERVICE_VENDOR, "The Apache Software Foundation");
-        regs.add(context.registerService(MetricsService.class.getName(),
-                new InternalMetricsServiceFactory(this, metricsMapper), svcProps));
+        regs.add(context.registerService(
+                MetricsService.class.getName(), new InternalMetricsServiceFactory(this, metricsMapper), svcProps));
 
         final Dictionary<String, String> regProps = new Hashtable<>();
         regProps.put(Constants.SERVICE_DESCRIPTION, "Apache Sling Metrics Registry");
@@ -126,23 +126,22 @@ public class MetricsServiceImpl implements MetricsService {
     }
 
     public <T> Gauge<T> gauge(String name, Supplier<T> supplier) {
-        return getOrAddGauge(name,supplier);
+        return getOrAddGauge(name, supplier);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <A> A adaptTo(Class<A> type) {
-        if (type == MetricRegistry.class){
+        if (type == MetricRegistry.class) {
             return (A) registry;
         }
         return null;
     }
-    
+
     @Override
-    public boolean unregister (String name) {
+    public boolean unregister(String name) {
         return registry.remove(name);
     }
-    
 
     void remove(String name) {
         metrics.remove(name);
@@ -177,7 +176,7 @@ public class MetricsServiceImpl implements MetricsService {
             return (Gauge<T>) metric;
         } else {
             try {
-                return registerGauge(name,supplier);
+                return registerGauge(name, supplier);
             } catch (IllegalArgumentException e) {
                 final Metric added = metrics.get(name);
                 if (added instanceof Gauge<?>) {
@@ -266,7 +265,7 @@ public class MetricsServiceImpl implements MetricsService {
     }
 
     private void enableJMXReporter() {
-        if (server == null){
+        if (server == null) {
             server = ManagementFactory.getPlatformMBeanServer();
         }
 

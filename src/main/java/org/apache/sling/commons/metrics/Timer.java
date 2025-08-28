@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.commons.metrics;
 
 import java.io.Closeable;
@@ -24,12 +23,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.osgi.annotation.versioning.ProviderType;
 
-
 /**
  * A timer metric which aggregates timing durations and provides duration statistics.
  */
 @ProviderType
-public interface Timer extends Counting, Metric{
+public interface Timer extends Counting, Metric {
     /**
      * A timing context.
      *

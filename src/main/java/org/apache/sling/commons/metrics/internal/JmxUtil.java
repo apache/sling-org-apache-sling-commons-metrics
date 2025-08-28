@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.sling.commons.metrics.internal;
 
 import javax.management.MalformedObjectNameException;
@@ -42,44 +41,43 @@ final class JmxUtil {
         String result;
         String quotedValue = ObjectName.quote(unquotedValue);
 
-        //Check if some chars are escaped or not. In that case
-        //length of quoted string (excluding quotes) would differ
+        // Check if some chars are escaped or not. In that case
+        // length of quoted string (excluding quotes) would differ
         if (quotedValue.substring(1, quotedValue.length() - 1).equals(unquotedValue)) {
             ObjectName on = null;
             try {
-                //Quoting logic in ObjectName does not escape ',', '='
-                //etc. So try now by constructing ObjectName. If that
-                //passes then value can be used as safely
+                // Quoting logic in ObjectName does not escape ',', '='
+                // etc. So try now by constructing ObjectName. If that
+                // passes then value can be used as safely
 
-                //Also we cannot just rely on ObjectName as it treats
-                //*, ? as pattern chars and which should ideally be escaped
+                // Also we cannot just rely on ObjectName as it treats
+                // *, ? as pattern chars and which should ideally be escaped
                 on = new ObjectName("dummy", "dummy", unquotedValue);
             } catch (MalformedObjectNameException ignore) {
-                //ignore
+                // ignore
             }
 
-            if (on != null){
+            if (on != null) {
                 result = unquotedValue;
             } else {
                 result = quotedValue;
             }
         } else {
-            //Some escaping done. So do quote
+            // Some escaping done. So do quote
             result = quotedValue;
         }
         return result;
     }
 
-
-    public static String safeDomainName(String name){
-        if (name == null){
+    public static String safeDomainName(String name) {
+        if (name == null) {
             return null;
         }
 
         name = name.trim();
 
-        //Taken from javax.management.ObjectName.isDomain()
-        //Following are special chars in domain name
+        // Taken from javax.management.ObjectName.isDomain()
+        // Following are special chars in domain name
         name = name.replace(':', '_');
         name = name.replace('*', '_');
         name = name.replace('?', '_');
