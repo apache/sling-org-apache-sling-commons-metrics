@@ -29,13 +29,13 @@ import java.util.Map;
 
 import com.codahale.metrics.JvmAttributeGaugeSet;
 import com.codahale.metrics.MetricRegistry;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.html.HtmlTable;
 import org.apache.felix.inventory.Format;
 import org.apache.felix.utils.json.JSONParser;
 import org.apache.sling.testing.mock.osgi.MockOsgi;
 import org.apache.sling.testing.mock.sling.junit.SlingContext;
+import org.htmlunit.WebClient;
+import org.htmlunit.html.HtmlPage;
+import org.htmlunit.html.HtmlTable;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
