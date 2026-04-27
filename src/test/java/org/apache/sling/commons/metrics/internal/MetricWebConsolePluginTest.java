@@ -18,8 +18,6 @@
  */
 package org.apache.sling.commons.metrics.internal;
 
-import javax.servlet.http.HttpServletRequest;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -29,6 +27,7 @@ import java.util.Map;
 
 import com.codahale.metrics.JvmAttributeGaugeSet;
 import com.codahale.metrics.MetricRegistry;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.felix.inventory.Format;
 import org.apache.felix.utils.json.JSONParser;
 import org.apache.sling.testing.mock.osgi.MockOsgi;
@@ -66,7 +65,7 @@ public class MetricWebConsolePluginTest {
     }
 
     @Test
-    public void consolidatedRegistry() throws Exception {
+    public void consolidatedRegistry() {
         MetricRegistry reg1 = new MetricRegistry();
         reg1.meter("test1");
         context.registerService(MetricRegistry.class, reg1, regProps("foo"));
@@ -105,7 +104,7 @@ public class MetricWebConsolePluginTest {
     }
 
     @Test
-    public void inventory_text() throws Exception {
+    public void inventory_text() {
         MetricRegistry reg1 = new MetricRegistry();
         reg1.meter("test1").mark(5);
         context.registerService(MetricRegistry.class, reg1, regProps("foo"));
@@ -123,7 +122,7 @@ public class MetricWebConsolePluginTest {
     }
 
     @Test
-    public void inventory_json() throws Exception {
+    public void inventory_json() {
         MetricRegistry reg1 = new MetricRegistry();
         reg1.meter("test1").mark(5);
         context.registerService(MetricRegistry.class, reg1, regProps("foo"));
@@ -151,11 +150,11 @@ public class MetricWebConsolePluginTest {
 
         activatePlugin();
 
-        plugin.doGet(mock(HttpServletRequest.class), context.response());
+        plugin.doGet(mock(HttpServletRequest.class), context.jakartaResponse());
 
         try (WebClient client = new WebClient(); ) {
-            HtmlPage page =
-                    client.loadHtmlCodeIntoCurrentWindow(context.response().getOutputAsString());
+            HtmlPage page = client.loadHtmlCodeIntoCurrentWindow(
+                    context.jakartaResponse().getOutputAsString());
 
             assertTable("data-meters", page);
             assertTable("data-counters", page);

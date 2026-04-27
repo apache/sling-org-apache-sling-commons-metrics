@@ -1,14 +1,14 @@
 Bundle-DocURL: https://sling.apache.org/documentation/bundles/metrics.html
 
 DynamicImport-Package:\
-  javax.servlet,\
-  javax.servlet.http,\
+  jakarta.servlet,\
+  jakarta.servlet.http,\
   org.apache.commons.io.output,\
   org.apache.felix.inventory
 
 Import-Package:\
-  javax.servlet;resolution:=optional,\
-  javax.servlet.http;resolution:=optional,\
+  jakarta.servlet;resolution:=optional,\
+  jakarta.servlet.http;resolution:=optional,\
   org.apache.commons.io.output;resolution:=optional,\
   org.apache.felix.inventory;resolution:=optional,\
   *
