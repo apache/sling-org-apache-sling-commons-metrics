@@ -20,8 +20,9 @@ package org.apache.sling.commons.metrics.internal;
 
 import javax.management.ObjectName;
 
+import java.util.Map;
+
 import com.codahale.metrics.MetricRegistry;
-import com.google.common.collect.ImmutableMap;
 import org.apache.sling.testing.mock.osgi.MockBundle;
 import org.apache.sling.testing.mock.osgi.junit.OsgiContext;
 import org.junit.Rule;
@@ -58,7 +59,7 @@ public class BundleMetricsMapperTest {
     public void mappedName_Header() throws Exception {
         MockBundle bundle = new MockBundle(context.bundleContext());
         bundle.setSymbolicName("com.example");
-        bundle.setHeaders(ImmutableMap.of(BundleMetricsMapper.HEADER_DOMAIN_NAME, "com.test"));
+        bundle.setHeaders(Map.of(BundleMetricsMapper.HEADER_DOMAIN_NAME, "com.test"));
 
         mapper.addMapping("bar", bundle);
 

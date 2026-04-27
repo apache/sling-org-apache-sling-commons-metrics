@@ -29,12 +29,14 @@ import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
 
+import static org.apache.sling.testing.paxexam.SlingOptions.paxLoggingApi;
 import static org.apache.sling.testing.paxexam.SlingOptions.scr;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
+import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
@@ -45,6 +47,11 @@ public class MetricsServiceFactoryIT extends TestSupport {
         return options(
                 baseConfiguration(),
                 scr(),
+
+                // SLING-12918 newer version to provide the 2.x version of slf4j
+                paxLoggingApi(),
+                systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
+
                 // Commons Metrics
                 testBundle("bundle.filename"),
                 mavenBundle()

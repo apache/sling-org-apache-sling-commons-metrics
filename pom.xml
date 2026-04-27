@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.sling</groupId>
         <artifactId>sling-bundle-parent</artifactId>
-        <version>62</version>
+        <version>66</version>
         <relativePath />
     </parent>
 
@@ -174,7 +174,6 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>5.19.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -236,12 +235,9 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <configuration>
                     <redirectTestOutputToFile>true</redirectTestOutputToFile>
-                    <systemProperties>
-                        <property>
-                            <name>bundle.filename</name>
-                            <value>${basedir}/target/${project.build.finalName}.jar</value>
-                        </property>
-                    </systemProperties>
+                    <systemPropertyVariables>
+                        <bundle.filename>${basedir}/target/${project.build.finalName}.jar</bundle.filename>
+                    </systemPropertyVariables>
                 </configuration>
                 <executions>
                     <execution>
@@ -258,5 +254,26 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>jacoco-report</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <configuration>
+                            <excludes>
+                                <!-- skip instrumentation to workaround a jacoco "MethodTooLargeException: Method too large" exception -->
+                                <exclude>org/htmlunit/css/StyleAttributes$Definition</exclude>
+                                <!-- exclude the binary classes that were copied from elsewhere -->
+                                <exclude>org/apache/felix/utils/json/*</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
