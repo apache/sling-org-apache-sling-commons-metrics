@@ -74,19 +74,20 @@ public class MetricWebConsolePlugin extends HttpServlet
      */
     public static final String METRIC_REGISTRY_NAME = "name";
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
-    private BundleContext context;
-    private ServiceTracker<MetricRegistry, MetricRegistry> tracker;
-    private ConcurrentMap<ServiceReference, MetricRegistry> registries = new ConcurrentHashMap<>();
+    private final transient Logger log = LoggerFactory.getLogger(getClass());
+    private final transient BundleContext context;
+    private final transient ServiceTracker<MetricRegistry, MetricRegistry> tracker;
+    private final transient ConcurrentMap<ServiceReference<MetricRegistry>, MetricRegistry> registries =
+            new ConcurrentHashMap<>();
 
-    private TimeUnit rateUnit = TimeUnit.SECONDS;
-    private TimeUnit durationUnit = TimeUnit.MILLISECONDS;
-    private Map<String, TimeUnit> specificDurationUnits = Collections.emptyMap();
-    private Map<String, TimeUnit> specificRateUnits = Collections.emptyMap();
-    private MetricTimeUnits timeUnit;
+    private final transient TimeUnit rateUnit = TimeUnit.SECONDS;
+    private final transient TimeUnit durationUnit = TimeUnit.MILLISECONDS;
+    private final transient Map<String, TimeUnit> specificDurationUnits = Collections.emptyMap();
+    private final transient Map<String, TimeUnit> specificRateUnits = Collections.emptyMap();
+    private final transient MetricTimeUnits timeUnit;
 
     @Activate
-    private void activate(BundleContext context) {
+    public MetricWebConsolePlugin(BundleContext context) {
         this.context = context;
         this.timeUnit = new MetricTimeUnits(rateUnit, durationUnit, specificRateUnits, specificDurationUnits);
         tracker = new ServiceTracker<>(context, MetricRegistry.class, this);
@@ -421,7 +422,7 @@ public class MetricWebConsolePlugin extends HttpServlet
 
     MetricRegistry getConsolidatedRegistry() {
         MetricRegistry registry = new MetricRegistry();
-        for (Map.Entry<ServiceReference, MetricRegistry> registryEntry : registries.entrySet()) {
+        for (Map.Entry<ServiceReference<MetricRegistry>, MetricRegistry> registryEntry : registries.entrySet()) {
             String metricRegistryName = (String) registryEntry.getKey().getProperty(METRIC_REGISTRY_NAME);
             for (Map.Entry<String, Metric> metricEntry :
                     registryEntry.getValue().getMetrics().entrySet()) {

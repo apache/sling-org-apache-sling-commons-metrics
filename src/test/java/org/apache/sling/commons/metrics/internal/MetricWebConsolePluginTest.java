@@ -20,7 +20,6 @@ package org.apache.sling.commons.metrics.internal;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,7 +55,7 @@ public class MetricWebConsolePluginTest {
     @Rule
     public final SlingContext context = new SlingContext();
 
-    private MetricWebConsolePlugin plugin = new MetricWebConsolePlugin();
+    private MetricWebConsolePlugin plugin = new MetricWebConsolePlugin(context.bundleContext());
 
     private static Map<String, Object> regProps(String name) {
         Map<String, Object> props = new HashMap<String, Object>();
@@ -174,17 +173,5 @@ public class MetricWebConsolePluginTest {
 
     private void activatePlugin() {
         MockOsgi.activate(plugin, context.bundleContext(), Collections.<String, Object>emptyMap());
-    }
-
-    private static class CloseRecordingWriter extends PrintWriter {
-
-        public CloseRecordingWriter(Writer out) {
-            super(out);
-        }
-
-        @Override
-        public void close() {
-            super.close();
-        }
     }
 }
